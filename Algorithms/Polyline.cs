@@ -2,7 +2,7 @@
 
 namespace Algorithms
 {
-    public class Polilyne : Minimizator
+    public class Polyline : Minimizator
     {
         private double _lipschitz = 1;
 
@@ -10,7 +10,7 @@ namespace Algorithms
         private Point _minPair;
         private double _delta;
 
-        public Polilyne(MinimizationTask task) : base(task)
+        public Polyline(MinimizationTask task) : base(task)
         {
             Report.Algorithm = "Метод ломаных";
         }
@@ -33,6 +33,8 @@ namespace Algorithms
 
         protected override void OnIteration()
         {
+            _pairs.Remove(_minPair);
+
             var p = 0.5d * (MinPoint.Y + _minPair.Y);
             _pairs.Add(new Point()
             {
@@ -44,7 +46,6 @@ namespace Algorithms
                 X = _minPair.X + _delta,
                 Y = p
             });
-            _pairs.Remove(_minPair);
 
             _minPair = _pairs.MinBy(x => x.Y);
             MinPoint = CalculateFunction(_minPair.X, 0);
