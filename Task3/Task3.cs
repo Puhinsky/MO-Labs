@@ -73,13 +73,13 @@ new Range()
         CsvFileWriter writer1 = new(_savePath, "глобальная минимизация 1");
         CsvFileWriter writer2 = new(_savePath, "глобальная минимизация 2");
 
-        FunctionPlotter plotter = new("x", "f(x)", 0.001d);
+        /*FunctionPlotter plotter = new("x", "f(x)", 0.001d);
         plotter.Plot(task1.Function[0], task1.Range);
         plotter.SetPoint(task1.Function[0].Point(min1));
         plotter.Export(_savePath, "функция 1");
         plotter.Plot(task2.Function[0], task2.Range);
         plotter.SetPoint(task2.Function[0].Point(min2));
-        plotter.Export(_savePath, "функция 2");
+        plotter.Export(_savePath, "функция 2");*/
 
         BruteForce bruteForce1 = new(task1);
         BruteForce bruteForce2 = new(task2);

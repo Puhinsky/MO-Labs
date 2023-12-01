@@ -4,7 +4,7 @@ namespace Algorithms
 {
     public class NewtonRaphson : Newton
     {
-        public NewtonRaphson(MinimizationTask task, int maxIterationCount) : base(task, maxIterationCount)
+        public NewtonRaphson(int maxIterationCount) : base(maxIterationCount)
         {
             Report.Algorithm = "Метод Ньютона-Рафсона";
         }

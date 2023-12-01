@@ -8,7 +8,7 @@ namespace Algorithms
         private double _mu;
         private Point _previousPoint;
 
-        public Marquardt(MinimizationTask task, int maxIterationCount) : base(task, maxIterationCount) { }
+        public Marquardt(int maxIterationCount) : base(maxIterationCount) { }
 
         protected override void Init()
         {

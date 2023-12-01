@@ -6,7 +6,7 @@ namespace Algorithms
 {
     public abstract class Minimizator
     {
-        private readonly MinimizationTask _task;
+        private MinimizationTask _task;
 
         protected Point MinPoint;
 
@@ -18,23 +18,19 @@ namespace Algorithms
         protected virtual void OnIteration() { }
         protected virtual void OnPostTermination() { }
 
-        public Minimizator(MinimizationTask task)
-        {
-            _task = task;
-        }
-
         protected Point CalculateFunction(double x, int diff)
         {
             Report.FunctionCalculations++;
 
-            return _task.Function[diff].Point(x);
+            return _task.Function[diff](x);
         }
 
         protected Range Range => _task.Range;
         protected double Epsilon => _task.Epsilon;
 
-        public bool TryGetMin()
+        public bool TryGetMin(MinimizationTask task)
         {
+            _task = task;
             Report.FunctionCalculations = 0;
             Init();
 

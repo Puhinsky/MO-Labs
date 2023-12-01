@@ -8,7 +8,7 @@ namespace Algorithms
         private Range _range;
         private double _sigma;
 
-        public Dichotomy(MinimizationTask task) : base(task)
+        public Dichotomy()
         {
             Report.Algorithm = "Дихтомия";
         }

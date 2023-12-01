@@ -10,16 +10,16 @@ namespace Algorithms
         private Point _minPair;
         private double _delta;
 
-        public Polyline(MinimizationTask task) : base(task)
+        public Polyline()
         {
             Report.Algorithm = "Метод ломаных";
         }
 
-        public bool TryGetMin(double lipschitz)
+        public bool TryGetMin(MinimizationTask task,double lipschitz)
         {
             _lipschitz = lipschitz;
 
-            return TryGetMin();
+            return TryGetMin(task);
         }
 
         protected override void Init()

@@ -11,7 +11,7 @@ namespace Algorithms
         private Point _left;
         private Point _right;
 
-        public GoldenRatio(MinimizationTask task) : base(task)
+        public GoldenRatio()
         {
             Report.Algorithm = "Метод золотого сечения";
         }

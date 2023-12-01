@@ -10,7 +10,7 @@ namespace Algorithms
 
         private double CurrentX => Range.Min + _iterationIndex * _delta;
 
-        public BruteForce(MinimizationTask task) : base(task)
+        public BruteForce()
         {
             Report.Algorithm = "Метод перебора";
         }

@@ -6,35 +6,12 @@ using Range = Function.Range;
 
 internal class Program
 {
-    private static void Main()
-    {
-        MinimizationTask task = new(
+    private static MinimizationTask task = new(
         new TargetFunction[]
         {
-            new TargetFunction((x) =>
-            {
-                return new Point()
-                {
-                    X = x,
-                    Y = x * Math.Atan(x) - 0.5d * Math.Log(1 + Math.Pow(x, 2))
-                };
-            }),
-            new TargetFunction((x) =>
-            {
-                return new Point()
-                {
-                    X = x,
-                    Y = Math.Atan(x)
-                };
-            }),
-            new TargetFunction((x) =>
-            {
-                return new Point()
-                {
-                    X = x,
-                    Y = 1 / (1 + Math.Pow(x, 2))
-                };
-            })
+            (x) => new Point(x, x * Math.Atan(x) - 0.5d * Math.Log(1 + Math.Pow(x, 2))),
+            (x) => new Point(x, Math.Atan(x)),
+            (x) => new Point(x, 1 / (1 + Math.Pow(x, 2))),
         },
         new Range()
         {
@@ -44,6 +21,8 @@ internal class Program
         0.01d
         );
 
+    private static void Main()
+    {
         Point minPoint = new()
         {
             X = 0,
@@ -62,9 +41,9 @@ internal class Program
         plotter.Plot(task.Function[2], task.Range);
         plotter.Export(_savePath, "производная 2");*/
 
-        Newton newton = new(task, 12);
-        NewtonRaphson newtonRaphson = new(task, 12);
-        Marquardt marquardt = new(task, 12);
+        Newton newton = new(12);
+        NewtonRaphson newtonRaphson = new(12);
+        Marquardt marquardt = new(12);
 
         List<double> newtonValues = new();
         List<Report> newtonReports = new();
@@ -91,7 +70,7 @@ internal class Program
 
     private static void AddResult(Newton algorithm, double x, List<double> values, List<Report> reports)
     {
-        if (algorithm.TryGetMin(x))
+        if (algorithm.TryGetMin(task, x))
         {
             values.Add(x);
             reports.Add(algorithm.Report);

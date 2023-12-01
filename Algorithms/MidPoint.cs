@@ -8,7 +8,7 @@ namespace Algorithms
         private double _diffValue;
         private Range _range;
 
-        public MidPoint(MinimizationTask task) : base(task)
+        public MidPoint()
         {
             Report.Algorithm = "Метод средней точки";
         }

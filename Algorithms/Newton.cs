@@ -13,17 +13,17 @@ namespace Algorithms
 
         private double Delta => Math.Abs(X - PreviousX);
 
-        public Newton(MinimizationTask task, int maxIterationCount) : base(task)
+        public Newton(int maxIterationCount)
         {
             _maxIterationCount = maxIterationCount;
             Report.Algorithm = "Метод Ньютона";
         }
 
-        public bool TryGetMin(double startX)
+        public bool TryGetMin(MinimizationTask task, double startX)
         {
             StartX = startX;
 
-            return TryGetMin();
+            return TryGetMin(task);
         }
 
         protected override void Init()

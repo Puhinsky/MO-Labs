@@ -33,7 +33,7 @@ namespace Drawing
         public void Plot(TargetFunction function, Range range)
         {
             ClearSeries();
-            AddSeries(new FunctionSeries(function.Value, range.Min, range.Max, _accuracity));
+            AddSeries(new FunctionSeries((x) => function(x).Y, range.Min, range.Max, _accuracity));
         }
 
         public void SetPoint(Point point)

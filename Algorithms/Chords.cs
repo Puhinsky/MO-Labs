@@ -10,7 +10,7 @@ namespace Algorithms
         private double _diffB;
         private Range _range;
 
-        public Chords(MinimizationTask task) : base(task)
+        public Chords()
         {
             Report.Algorithm = "Метод хорд";
         }

@@ -11,7 +11,7 @@ namespace Algorithms
 
         private double Delta => Math.Abs(MinPoint.X - _previousMin.X);
 
-        public Parabola(MinimizationTask task) : base(task)
+        public Parabola()
         {
             Report.Algorithm = "Метод параболы";
         }

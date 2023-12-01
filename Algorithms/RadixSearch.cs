@@ -9,7 +9,7 @@ namespace Algorithms
         private double _delta;
         private bool _isMinValuePassed;
 
-        public RadixSearch(MinimizationTask task) : base(task)
+        public RadixSearch()
         {
             Report.Algorithm = "Поразрядный поиск";
         }
