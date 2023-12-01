@@ -6,7 +6,7 @@ using Range = Function.Range;
 
 internal class Program
 {
-    private static MinimizationTask task = new(
+    private static readonly MinimizationTask task = new(
         new TargetFunction[]
         {
             (x) => new Point(x, x * Math.Atan(x) - 0.5d * Math.Log(1 + Math.Pow(x, 2))),

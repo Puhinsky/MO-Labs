@@ -5,57 +5,53 @@ using Range = Function.Range;
 
 namespace AlgoritmsTwoDims
 {
-    public class SteepestDescent : MinimizatorTwoDims
+    public class SteepestDescent<SM> : MinimizatorTwoDims where SM : Minimizator, new()
     {
         private double[] _gradient;
-        private readonly double[] _x;
+        private double[] _x;
         private double _alpha;
 
-        private MinimizationTask _singleTask;
-        private RadixSearch _singleMinimizator;
+        private readonly MinimizationTask _singleTask;
+        private readonly SM _singleMinimizator = new();
 
-        public SteepestDescent(MinimizationTaskTwoDims task) : base(task)
+        public SteepestDescent()
         {
             _gradient = new double[2];
             _x = new double[2];
 
-            _singleMinimizator = new RadixSearch();
+            Report.Algorithm = "Наискорейший спуск";
             _singleTask = new MinimizationTask(
                     new TargetFunction[]
                     {
-                        (x) => new Point(x, CalculateFunction(_x[0] - x * _gradient[0], _x[1] - x * _gradient[1]).Y)
+                        (x) => new Point(x, CalculateFunction(_x.Substract(_gradient.MultiplyConstant(x))).Y)
                     },
                     new Range()
                     {
                         Min = 0,
                         Max = double.MaxValue
-                    },
-                    Epsilon
-                    );
+                    });
         }
 
         protected override void Init()
         {
-            _x[0] = StartX1;
-            _x[1] = StartX2;
-            MinPoint = CalculateFunction(_x[0], _x[1]);
+            _singleTask.Epsilon = Epsilon;
+            StartX!.CopyTo(_x, 0);
         }
 
         protected override void OnIteration()
         {
             CalculateAlpha();
-            CalculateX(0);
-            CalculateX(1);
+            _x = _x.Substract(_gradient.MultiplyConstant(_alpha));
         }
 
         protected override void OnPostTermination()
         {
-            MinPoint = CalculateFunction(_x[0], _x[1]);
+            MinPoint = CalculateFunction(_x);
         }
 
         protected override bool TerminationCondition()
         {
-            _gradient = CalculateGradient(_x[0], _x[1]);
+            _gradient = CalculateGradient(_x);
 
             return _gradient.CalculateLenght() < Epsilon;
         }
@@ -63,11 +59,7 @@ namespace AlgoritmsTwoDims
         private void CalculateAlpha()
         {
             _singleMinimizator.TryGetMin(_singleTask);
-            _alpha = _singleMinimizator.Report.Min.X;        }
-
-        private void CalculateX(int dimension)
-        {
-            _x[dimension] = _x[dimension] - _alpha * _gradient[dimension];
+            _alpha = _singleMinimizator.Report.Min.X;
         }
     }
 }

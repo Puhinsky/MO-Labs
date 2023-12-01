@@ -4,10 +4,10 @@ namespace AlgoritmsTwoDims
 {
     public abstract class MinimizatorTwoDims
     {
-        protected MinimizationTaskTwoDims Task;
+        private MinimizationTaskTwoDims? _task;
 
-        protected double StartX1 { get; private set; }
-        protected double StartX2 { get; private set; }
+        protected double[]? StartX { get; private set; }
+        protected int DimensionsCount => StartX!.Length;
 
         protected PointTwoDims MinPoint;
 
@@ -19,40 +19,38 @@ namespace AlgoritmsTwoDims
         protected virtual void OnIteration() { }
         protected virtual void OnPostTermination() { }
 
-        public MinimizatorTwoDims(MinimizationTaskTwoDims task)
+        private PointTwoDims CalculatePartialDeriv(double[] x, int diff, int variableColumn, int variableRow)
         {
-            Task = task;
+            return _task!.PartialDerivs[diff][variableRow, variableColumn](x);
         }
 
-        private PointTwoDims CalculatePartialDeriv(double x1, double x2, int diff, int x)
-        {
-            return Task.PartialDerivs[diff, x].Point(x1, x2);
-        }
-
-        protected PointTwoDims CalculateFunction(double x1, double x2)
+        protected PointTwoDims CalculateFunction(double[] x)
         {
             Report.FunctionCalculations++;
 
-            return Task.Function.Point(x1, x2);
+            return _task!.Function(x);
         }
 
-        protected double[] CalculateGradient(double x1, double x2)
+        protected double[] CalculateGradient(double[] x)
         {
-            var gradient = new double[2];
+            var gradient = new double[x.Length];
 
-            gradient[0] = CalculatePartialDeriv(x1, x2, 0, 0).Y;
-            gradient[1] = CalculatePartialDeriv(x1, x2, 0, 1).Y;
+            for (int i = 0; i < x.Length; i++)
+            {
+                gradient[i] = CalculatePartialDeriv(x, 0, i, 0).Y;
+            }
 
             return gradient;
         }
 
-        protected double Epsilon => Task.Epsilon;
+        protected double Epsilon => _task!.Epsilon;
 
-        public bool TryGetMin(double x1, double x2)
+        public bool TryGetMin(double[] x, MinimizationTaskTwoDims task)
         {
-            StartX1 = x1;
-            StartX2 = x2;
+            _task = task;
+            StartX = x;
             Report.FunctionCalculations = 0;
+
             Init();
 
             bool isInterrupt = InterruptCondition();
