@@ -1,4 +1,5 @@
 ﻿using FunctionTwoDims;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace AlgoritmsTwoDims
 {
@@ -6,8 +7,7 @@ namespace AlgoritmsTwoDims
     {
         private MinimizationTaskTwoDims? _task;
 
-        protected double[]? StartX { get; private set; }
-        protected int DimensionsCount => StartX!.Length;
+        protected Vector<double>? StartX { get; private set; }
 
         protected PointTwoDims MinPoint;
 
@@ -19,23 +19,23 @@ namespace AlgoritmsTwoDims
         protected virtual void OnIteration() { }
         protected virtual void OnPostTermination() { }
 
-        private PointTwoDims CalculatePartialDeriv(double[] x, int diff, int variableColumn, int variableRow)
+        private PointTwoDims CalculatePartialDeriv(Vector<double> x, int diff, int variableColumn, int variableRow)
         {
             return _task!.PartialDerivs[diff][variableRow, variableColumn](x);
         }
 
-        protected PointTwoDims CalculateFunction(double[] x)
+        protected PointTwoDims CalculateFunction(Vector<double> x)
         {
             Report.FunctionCalculations++;
 
             return _task!.Function(x);
         }
 
-        protected double[] CalculateGradient(double[] x)
+        protected Vector<double> CalculateGradient(Vector<double> x)
         {
-            var gradient = new double[x.Length];
+            var gradient = Vector<double>.Build.Dense(x.Count);
 
-            for (int i = 0; i < x.Length; i++)
+            for (int i = 0; i < gradient.Count; i++)
             {
                 gradient[i] = CalculatePartialDeriv(x, 0, i, 0).Y;
             }
@@ -43,9 +43,24 @@ namespace AlgoritmsTwoDims
             return gradient;
         }
 
+        protected Matrix<double> CalculateHessian(Vector<double> x)
+        {
+            var hessian = Matrix<double>.Build.Dense(x.Count, x.Count);
+
+            for (int i = 0; i < x.Count; i++)
+            {
+                for (int j = 0; j < x.Count; j++)
+                {
+                    hessian[i, j] = CalculatePartialDeriv(x, 1, i, j).Y;
+                }
+            }
+
+            return hessian;
+        }
+
         protected double Epsilon => _task!.Epsilon;
 
-        public bool TryGetMin(double[] x, MinimizationTaskTwoDims task)
+        public bool TryGetMin(Vector<double> x, MinimizationTaskTwoDims task)
         {
             _task = task;
             StartX = x;

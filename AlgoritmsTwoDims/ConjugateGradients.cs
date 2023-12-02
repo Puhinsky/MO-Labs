@@ -1,16 +1,16 @@
 ﻿using Algorithms;
 using Function;
-using FunctionTwoDims;
+using MathNet.Numerics.LinearAlgebra;
 using Range = Function.Range;
 
 namespace AlgoritmsTwoDims
 {
     public class ConjugateGradients<SM> : MinimizatorTwoDims where SM : Minimizator, new()
     {
-        private double[]? _x;
-        private double[]? _gradient;
-        private double[]? _prev_gradient;
-        private double[]? _p;
+        private Vector<double>? _x;
+        private Vector<double>? _gradient;
+        private Vector<double>? _prev_gradient;
+        private Vector<double>? _p;
 
         private double _alpha;
         private double _beta;
@@ -29,9 +29,9 @@ namespace AlgoritmsTwoDims
             _singleTask = new MinimizationTask(
                 new TargetFunction[]
                 {
-                    (x) => 
+                    (x) =>
                     {
-                        return new Point(x, CalculateFunction(_x!.Add(_p!.MultiplyConstant(x))).Y);
+                        return new Point(x, CalculateFunction(_x + x * _p).Y);
                     }
                 },
                 new Range()
@@ -45,23 +45,21 @@ namespace AlgoritmsTwoDims
         {
             _singleTask.Epsilon = Epsilon;
 
-            _x = new double[DimensionsCount];
-            _p = new double[DimensionsCount];
-            _gradient = new double[DimensionsCount];
-            _prev_gradient = new double[DimensionsCount];
+            _x = Vector<double>.Build.DenseOfVector(StartX);
+            _gradient = Vector<double>.Build.Dense(_x.Count);
 
-            StartX!.CopyTo(_x, 0);
             _k = 0;
             _gradient = CalculateGradient(_x);
-            _p = _gradient.MultiplyConstant(-1d);
+            _p = -1 * _gradient;
         }
 
         protected override void OnIteration()
         {
             CalculateAlpha();
-            _x = _x!.Add(_p!.MultiplyConstant(_alpha));
+            _x += _alpha * _p;
 
-            _gradient!.CopyTo(_prev_gradient!, 0);
+            _prev_gradient = Vector<double>.Build.DenseOfVector(_gradient);
+
             _gradient = CalculateGradient(_x);
 
             if (NeedRestart)
@@ -72,14 +70,15 @@ namespace AlgoritmsTwoDims
             else
             {
                 CalculateBeta();
+                _k++;
             }
 
-            _p = _gradient.MultiplyConstant(-1d).Add(_p!.MultiplyConstant(_beta));
+            _p = -1d * _gradient + _beta * _p;
         }
 
         protected override bool TerminationCondition()
         {
-            return _gradient!.CalculateLenght() < Epsilon;
+            return _gradient!.L2Norm() < Epsilon;
         }
 
         protected override void OnPostTermination()
@@ -95,7 +94,7 @@ namespace AlgoritmsTwoDims
 
         private void CalculateBeta()
         {
-            _beta = Math.Pow(_gradient!.CalculateLenght(), 2) / Math.Pow(_prev_gradient!.CalculateLenght(), 2);
+            _beta = Math.Pow(_gradient!.L2Norm(), 2) / Math.Pow(_prev_gradient!.L2Norm(), 2);
         }
     }
 }

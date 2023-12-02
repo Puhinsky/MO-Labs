@@ -1,14 +1,15 @@
 ﻿using Algorithms;
 using Function;
 using FunctionTwoDims;
+using MathNet.Numerics.LinearAlgebra;
 using Range = Function.Range;
 
 namespace AlgoritmsTwoDims
 {
     public class SteepestDescent<SM> : MinimizatorTwoDims where SM : Minimizator, new()
     {
-        private double[] _gradient;
-        private double[] _x;
+        private Vector<double>? _gradient;
+        private Vector<double>? _x;
         private double _alpha;
 
         private readonly MinimizationTask _singleTask;
@@ -16,14 +17,11 @@ namespace AlgoritmsTwoDims
 
         public SteepestDescent()
         {
-            _gradient = new double[2];
-            _x = new double[2];
-
             Report.Algorithm = "Наискорейший спуск";
             _singleTask = new MinimizationTask(
                     new TargetFunction[]
                     {
-                        (x) => new Point(x, CalculateFunction(_x.Substract(_gradient.MultiplyConstant(x))).Y)
+                        (x) => new Point(x, CalculateFunction(_x - x *_gradient).Y)
                     },
                     new Range()
                     {
@@ -34,26 +32,26 @@ namespace AlgoritmsTwoDims
 
         protected override void Init()
         {
+            _x = Vector<double>.Build.DenseOfVector(StartX);
             _singleTask.Epsilon = Epsilon;
-            StartX!.CopyTo(_x, 0);
         }
 
         protected override void OnIteration()
         {
             CalculateAlpha();
-            _x = _x.Substract(_gradient.MultiplyConstant(_alpha));
+            _x -= _alpha * _gradient;
         }
 
         protected override void OnPostTermination()
         {
-            MinPoint = CalculateFunction(_x);
+            MinPoint = CalculateFunction(_x!);
         }
 
         protected override bool TerminationCondition()
         {
-            _gradient = CalculateGradient(_x);
+            _gradient = CalculateGradient(_x!);
 
-            return _gradient.CalculateLenght() < Epsilon;
+            return _gradient.L2Norm() < Epsilon;
         }
 
         private void CalculateAlpha()

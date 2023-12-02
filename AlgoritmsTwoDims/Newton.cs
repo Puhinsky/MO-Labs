@@ -1,15 +1,37 @@
-﻿namespace AlgoritmsTwoDims
+﻿using MathNet.Numerics.LinearAlgebra;
+
+namespace AlgoritmsTwoDims
 {
     public class Newton : MinimizatorTwoDims
     {
+        private Vector<double>? _gradient;
+        private Vector<double>? _x;
+
         public Newton()
         {
-            Report.Algorithm = "Метод Ньютон";
+            Report.Algorithm = "Метод Ньютона";
+        }
+
+        protected override void Init()
+        {
+            _x = Vector<double>.Build.DenseOfVector(StartX);
+            _gradient = CalculateGradient(_x!);
+        }
+
+        protected override void OnIteration()
+        {
+            _x -= CalculateHessian(_x!).Inverse() * _gradient;
+            _gradient = CalculateGradient(_x!);
         }
 
         protected override bool TerminationCondition()
         {
-            throw new NotImplementedException();
+            return _gradient!.L2Norm() < Epsilon;
+        }
+
+        protected override void OnPostTermination()
+        {
+            MinPoint = CalculateFunction(_x!);
         }
     }
 }
