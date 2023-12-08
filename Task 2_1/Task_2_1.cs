@@ -4,7 +4,7 @@ using FunctionTwoDims;
 using MathNet.Numerics.LinearAlgebra;
 using Newton = AlgoritmsTwoDims.Newton;
 
-double a = 500;
+double a = 1000;
 
 MinimizationTaskTwoDims task = new(
     (Vector<double> x) => new PointTwoDims(x, Math.Pow(x[0], 2) + a * Math.Pow(x[1], 2)),
@@ -72,5 +72,9 @@ newton.TryGetMin(startPoint1, task);
 Console.WriteLine($"{newton.Report.Min.X[0]} {newton.Report.Min.X[1]} {newton.Report.Min.Y} {newton.Report.FunctionCalculations}");
 
 RegularSimplex simplex = new();
-simplex.TryGetMin(startPoint1, task, 2d, 0.6d);
+simplex.TryGetMin(startPoint1, task, l: 2d, sigma: 0.6d);
 Console.WriteLine($"{simplex.Report.Min.X[0]} {simplex.Report.Min.X[1]} {simplex.Report.Min.Y} {simplex.Report.FunctionCalculations}");
+
+CoordinateDescent<RadixSearch> coordinateDescent = new();
+coordinateDescent.TryGetMin(startPoint1, task);
+Console.WriteLine($"{coordinateDescent.Report.Min.X[0]} {coordinateDescent.Report.Min.X[1]} {coordinateDescent.Report.Min.Y} {coordinateDescent.Report.FunctionCalculations}");
