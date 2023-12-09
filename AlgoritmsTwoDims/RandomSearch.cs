@@ -54,7 +54,6 @@ namespace AlgoritmsTwoDims
         {
             for (int i = 0; i < _triesCount; i++)
             {
-                var dir = GetRandomDirection();
                 var testX = _x + _alpha * GetRandomDirection();
                 var testPoint = CalculateFunction(testX);
 

@@ -14,6 +14,7 @@ namespace AlgoritmsTwoDims
 
         private readonly MinimizationTask _singleTask;
         private readonly SM _singleMinimizator = new();
+        private double _singleEpsilon = 0.0001d;
 
         public SteepestDescent()
         {
@@ -30,10 +31,17 @@ namespace AlgoritmsTwoDims
                     });
         }
 
+        public bool TryGetMin(Vector<double> x, MinimizationTaskTwoDims task, double singleEpsilon)
+        {
+            _singleEpsilon = singleEpsilon;
+
+            return TryGetMin(x, task);
+        }
+
         protected override void Init()
         {
             _x = Vector<double>.Build.DenseOfVector(StartX);
-            _singleTask.Epsilon = Epsilon;
+            _singleTask.Epsilon = _singleEpsilon;
         }
 
         protected override void OnIteration()

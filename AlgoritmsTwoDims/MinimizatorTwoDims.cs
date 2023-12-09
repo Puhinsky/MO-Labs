@@ -19,9 +19,11 @@ namespace AlgoritmsTwoDims
         protected virtual void OnIteration() { }
         protected virtual void OnPostTermination() { }
 
-        private PointTwoDims CalculatePartialDeriv(Vector<double> x, int diff, int variableColumn, int variableRow)
+        private PointTwoDims CalculatePartialDeriv(Vector<double> x, int diff, int column, int row)
         {
-            return _task!.PartialDerivs[diff][variableRow, variableColumn](x);
+            Report.FunctionCalculations++;
+
+            return _task!.PartialDerivs[diff][row, column](x);
         }
 
         protected PointTwoDims CalculateFunction(Vector<double> x)
@@ -47,11 +49,19 @@ namespace AlgoritmsTwoDims
         {
             var hessian = Matrix<double>.Build.Dense(x.Count, x.Count);
 
-            for (int i = 0; i < x.Count; i++)
+            for (int column = 0; column < x.Count; column++)
             {
-                for (int j = 0; j < x.Count; j++)
+                for (int row = column; row < x.Count; row++)
                 {
-                    hessian[i, j] = CalculatePartialDeriv(x, 1, i, j).Y;
+                    hessian[column, row] = CalculatePartialDeriv(x, 1, column, row).Y;
+                }
+            }
+
+            for(int column = 1; column < x.Count; column++)
+            {
+                for (int row = 0; row < column; row++)
+                {
+                    hessian[row, column] = hessian[column, row];
                 }
             }
 

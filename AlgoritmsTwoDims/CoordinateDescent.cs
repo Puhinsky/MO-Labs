@@ -15,6 +15,7 @@ namespace AlgoritmsTwoDims
 
         private readonly SM _singleMinimizator = new();
         private readonly MinimizationTask _singleTask;
+        private double _singleEpsilon = 0.0001d;
 
         public CoordinateDescent()
         {
@@ -32,9 +33,16 @@ namespace AlgoritmsTwoDims
             );
         }
 
+        public bool TryGetMin(Vector<double> x, MinimizationTaskTwoDims task, double singleEpsilon)
+        {
+            _singleEpsilon = singleEpsilon;
+
+            return TryGetMin(x, task);
+        }
+
         protected override void Init()
         {
-            _singleTask.Epsilon = Epsilon;
+            _singleTask.Epsilon = _singleEpsilon;
             BuildBasis();
             _x = Vector<double>.Build.DenseOfVector(StartX!);
             MinPoint = CalculateFunction(_x);

@@ -1,5 +1,6 @@
 ﻿using Algorithms;
 using AlgoritmsTwoDims;
+using CSV;
 using FunctionTwoDims;
 using MathNet.Numerics.LinearAlgebra;
 using Newton = AlgoritmsTwoDims.Newton;
@@ -56,33 +57,65 @@ MinimizationTaskTwoDims testTask = new(
         }
     });
 
+var parameters = new List<double> { 1d, 250d, 1000d };
+var epsilons = new List<double> { 0.001d, 0.00001d };
+
 var startPoint0 = Vector<double>.Build.Dense(new[] { 0d, 0d });
 var startPoint1 = Vector<double>.Build.Dense(new[] { 1d, 1d });
 
+string _savePath = "C:\\Users\\puhinsky\\source\\repos\\MO Labs\\Resources\\Lab2\\";
+CsvFileWriter writer = new(_savePath, "Задание 1");
+
 SteepestDescent<RadixSearch> steepestDescent = new();
-steepestDescent.TryGetMin(startPoint1, task);
-Console.WriteLine($"{steepestDescent.Report.Min.X[0]} {steepestDescent.Report.Min.X[1]} {steepestDescent.Report.Min.Y} {steepestDescent.Report.FunctionCalculations}");
-
 ConjugateGradients<RadixSearch> conjugateGradients = new();
-conjugateGradients.TryGetMin(startPoint1, task);
-Console.WriteLine($"{conjugateGradients.Report.Min.X[0]} {conjugateGradients.Report.Min.X[1]} {conjugateGradients.Report.Min.Y} {conjugateGradients.Report.FunctionCalculations}");
-
 Newton newton = new();
-newton.TryGetMin(startPoint1, task);
-Console.WriteLine($"{newton.Report.Min.X[0]} {newton.Report.Min.X[1]} {newton.Report.Min.Y} {newton.Report.FunctionCalculations}");
-
 RegularSimplex simplex = new();
-simplex.TryGetMin(startPoint1, task, l: 2d, sigma: 0.6d);
-Console.WriteLine($"{simplex.Report.Min.X[0]} {simplex.Report.Min.X[1]} {simplex.Report.Min.Y} {simplex.Report.FunctionCalculations}");
-
 CoordinateDescent<RadixSearch> coordinateDescent = new();
-coordinateDescent.TryGetMin(startPoint1, task);
-Console.WriteLine($"{coordinateDescent.Report.Min.X[0]} {coordinateDescent.Report.Min.X[1]} {coordinateDescent.Report.Min.Y} {coordinateDescent.Report.FunctionCalculations}");
-
 HookJeeves hookJeeves = new();
-hookJeeves.TryGetMin(startPoint1, task, delta: Vector<double>.Build.DenseOfArray(new double[] { 1d, 1d }), gamma: 1.5d);
-Console.WriteLine($"{hookJeeves.Report.Min.X[0]} {hookJeeves.Report.Min.X[1]} {hookJeeves.Report.Min.Y} {hookJeeves.Report.FunctionCalculations}");
-
 RandomSearch random = new();
-random.TryGetMin(startPoint1, task, alpha: 1d, gamma: 1.5d, triesCount: 50);
-Console.WriteLine($"{random.Report.Min.X[0]} {random.Report.Min.X[1]} {random.Report.Min.Y} {random.Report.FunctionCalculations}");
+
+var algorithms = new List<MinimizatorTwoDims>()
+{
+    steepestDescent,
+    conjugateGradients,
+    newton,
+    simplex,
+    coordinateDescent,
+    hookJeeves,
+    random
+};
+
+writer.AddData(algorithms.Select(a => a.Report.Algorithm));
+
+foreach (var epsilon in epsilons)
+{
+    task.Epsilon = epsilon;
+
+    foreach (var parameter in parameters)
+    {
+        a = parameter;
+
+        steepestDescent.TryGetMin(startPoint1, task);
+        conjugateGradients.TryGetMin(startPoint1, task);
+        newton.TryGetMin(startPoint1, task);
+        simplex.TryGetMin(startPoint1, task, l: 2d, sigma: 0.6d);
+        coordinateDescent.TryGetMin(startPoint1, task);
+        hookJeeves.TryGetMin(startPoint1, task, delta: Vector<double>.Build.DenseOfArray(new double[] { 1d, 1d }), gamma: 1.5d);
+        random.TryGetMin(startPoint1, task, alpha: 1d, gamma: 1.5d, triesCount: 50);
+
+        writer.AddData(algorithms.Select(a => a.Report.FunctionCalculations));
+        /*writer.AddData(algorithms.Select(a =>
+        {
+            string vector = "";
+
+            foreach (var x in a.Report.Min.X)
+            {
+                vector += $"{x} ";
+            }
+
+            return vector;
+        }));*/
+    }
+}
+
+writer.Save();
