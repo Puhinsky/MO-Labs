@@ -4,11 +4,11 @@ using FunctionTwoDims;
 using MathNet.Numerics.LinearAlgebra;
 using Newton = AlgoritmsTwoDims.Newton;
 
-double a = 1000;
+double a = 10;
 
 MinimizationTaskTwoDims task = new(
     (Vector<double> x) => new PointTwoDims(x, Math.Pow(x[0], 2) + a * Math.Pow(x[1], 2)),
-    0.00001d,
+    0.01d,
     new TargetFunctionTwoDims[][,]
     {
         new TargetFunctionTwoDims[,]
@@ -78,3 +78,11 @@ Console.WriteLine($"{simplex.Report.Min.X[0]} {simplex.Report.Min.X[1]} {simplex
 CoordinateDescent<RadixSearch> coordinateDescent = new();
 coordinateDescent.TryGetMin(startPoint1, task);
 Console.WriteLine($"{coordinateDescent.Report.Min.X[0]} {coordinateDescent.Report.Min.X[1]} {coordinateDescent.Report.Min.Y} {coordinateDescent.Report.FunctionCalculations}");
+
+HookJeeves hookJeeves = new();
+hookJeeves.TryGetMin(startPoint1, task, delta: Vector<double>.Build.DenseOfArray(new double[] { 1d, 1d }), gamma: 1.5d);
+Console.WriteLine($"{hookJeeves.Report.Min.X[0]} {hookJeeves.Report.Min.X[1]} {hookJeeves.Report.Min.Y} {hookJeeves.Report.FunctionCalculations}");
+
+RandomSearch random = new();
+random.TryGetMin(startPoint1, task, alpha: 1d, gamma: 1.5d, triesCount: 50);
+Console.WriteLine($"{random.Report.Min.X[0]} {random.Report.Min.X[1]} {random.Report.Min.Y} {random.Report.FunctionCalculations}");

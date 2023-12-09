@@ -13,8 +13,8 @@ namespace AlgoritmsTwoDims
         private int _currentBasis;
         private PointTwoDims _prevPoint;
 
-        private SM _singleMinimizator = new();
-        private MinimizationTask _singleTask;
+        private readonly SM _singleMinimizator = new();
+        private readonly MinimizationTask _singleTask;
 
         public CoordinateDescent()
         {
