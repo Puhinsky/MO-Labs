@@ -42,12 +42,14 @@ namespace AlgoritmsTwoDims
         {
             _x = Vector<double>.Build.DenseOfVector(StartX);
             _singleTask.Epsilon = _singleEpsilon;
+            Report.Path.Add(_x);
         }
 
         protected override void OnIteration()
         {
             CalculateAlpha();
             _x -= _alpha * _gradient;
+            Report.Path.Add(_x);
         }
 
         protected override void OnPostTermination()

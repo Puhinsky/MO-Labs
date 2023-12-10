@@ -28,6 +28,7 @@ namespace AlgoritmsTwoDims
         {
             _n = StartX!.Count;
             InitSimplex();
+            ReportSimplex();
         }
 
         protected override bool TerminationCondition()
@@ -42,6 +43,7 @@ namespace AlgoritmsTwoDims
             if (TryReflectMax(maxPoint, out PointTwoDims reflectPoint))
             {
                 ReplacePoint(maxPoint, reflectPoint);
+                ReportSimplex();
 
                 return;
             }
@@ -49,11 +51,13 @@ namespace AlgoritmsTwoDims
             if (TryReflectOther(maxPoint, out reflectPoint))
             {
                 ReplacePoint(maxPoint, reflectPoint);
+                ReportSimplex();
 
                 return;
             }
 
             Reduce();
+            ReportSimplex();
         }
 
         protected override void OnPostTermination()
@@ -145,7 +149,13 @@ namespace AlgoritmsTwoDims
             for (int i = 1; i < _simplex!.Length; i++)
             {
                 _simplex[i].X = _simplex[0].X + _sigma * (_simplex[i].X - _simplex[0].X);
+                _simplex[i] = CalculateFunction(_simplex[i].X);
             }
+        }
+
+        private void ReportSimplex()
+        {
+            Report.Path.AddRange(_simplex!.Select(s => s.X).Append(_simplex![0].X));
         }
     }
 }

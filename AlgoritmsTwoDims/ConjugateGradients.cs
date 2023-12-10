@@ -1,5 +1,6 @@
 ﻿using Algorithms;
 using Function;
+using FunctionTwoDims;
 using MathNet.Numerics.LinearAlgebra;
 using Range = Function.Range;
 
@@ -20,6 +21,7 @@ namespace AlgoritmsTwoDims
 
         private readonly MinimizationTask _singleTask;
         private readonly SM _singleMinimizator = new();
+        private double _singleEpsilon = 0.0001d;
 
         private bool NeedRestart => _k + 1 >= _dimensions;
 
@@ -41,12 +43,20 @@ namespace AlgoritmsTwoDims
                 });
         }
 
+        public bool TryGetMin(Vector<double> x, MinimizationTaskTwoDims task, double singleEpsilon)
+        {
+            _singleEpsilon = singleEpsilon;
+
+            return TryGetMin(x, task);
+        }
+
         protected override void Init()
         {
-            _singleTask.Epsilon = Epsilon;
+            _singleTask.Epsilon = _singleEpsilon;
 
             _x = Vector<double>.Build.DenseOfVector(StartX);
             _gradient = Vector<double>.Build.Dense(_x.Count);
+            Report.Path.Add(_x);
 
             _k = 0;
             _gradient = CalculateGradient(_x);
@@ -74,6 +84,7 @@ namespace AlgoritmsTwoDims
             }
 
             _p = -1d * _gradient + _beta * _p;
+            Report.Path.Add(_x);
         }
 
         protected override bool TerminationCondition()

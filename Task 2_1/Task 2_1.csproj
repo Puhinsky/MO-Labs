@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AlgoritmsTwoDims\AlgoritmsTwoDims.csproj" />
     <ProjectReference Include="..\CSV\CSV.csproj" />
+    <ProjectReference Include="..\Drawing\Drawing.csproj" />
     <ProjectReference Include="..\FunctionTwoDims\FunctionTwoDims.csproj" />
   </ItemGroup>
 

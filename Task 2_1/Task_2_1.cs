@@ -1,6 +1,7 @@
 ﻿using Algorithms;
 using AlgoritmsTwoDims;
 using CSV;
+using Drawing;
 using FunctionTwoDims;
 using MathNet.Numerics.LinearAlgebra;
 using Newton = AlgoritmsTwoDims.Newton;
@@ -66,6 +67,11 @@ var startPoint1 = Vector<double>.Build.Dense(new[] { 1d, 1d });
 string _savePath = "C:\\Users\\puhinsky\\source\\repos\\MO Labs\\Resources\\Lab2\\";
 CsvFileWriter writer = new(_savePath, "Задание 1");
 
+FunctionPlotter plotter = new("x1", "x2", 0.001d);
+Function.Range plotRange = new() { Min = -5, Max = 5 };
+
+List<List<ReportTwoDims>> reports = new();
+
 SteepestDescent<RadixSearch> steepestDescent = new();
 ConjugateGradients<RadixSearch> conjugateGradients = new();
 Newton newton = new();
@@ -93,6 +99,7 @@ foreach (var epsilon in epsilons)
 
     foreach (var parameter in parameters)
     {
+        var parameterReport = new List<ReportTwoDims>();
         a = parameter;
 
         steepestDescent.TryGetMin(startPoint1, task);
@@ -100,22 +107,29 @@ foreach (var epsilon in epsilons)
         newton.TryGetMin(startPoint1, task);
         simplex.TryGetMin(startPoint1, task, l: 2d, sigma: 0.6d);
         coordinateDescent.TryGetMin(startPoint1, task);
-        hookJeeves.TryGetMin(startPoint1, task, delta: Vector<double>.Build.DenseOfArray(new double[] { 1d, 1d }), gamma: 1.5d);
-        random.TryGetMin(startPoint1, task, alpha: 1d, gamma: 1.5d, triesCount: 50);
+        hookJeeves.TryGetMin(startPoint1, task, delta: Vector<double>.Build.DenseOfArray(new double[] { 1d, 1d }), gamma: 1.5d, 0.0001d);
+        random.TryGetMin(startPoint1, task, alpha: 30d, gamma: 1.2d, triesCount: 100);
 
-        writer.AddData(algorithms.Select(a => a.Report.FunctionCalculations));
-        /*writer.AddData(algorithms.Select(a =>
+        parameterReport.Add(steepestDescent.Report);
+        parameterReport.Add(conjugateGradients.Report);
+        parameterReport.Add(newton.Report);
+        parameterReport.Add(simplex.Report);
+        parameterReport.Add(coordinateDescent.Report);
+        parameterReport.Add(hookJeeves.Report);
+        parameterReport.Add(random.Report);
+        reports.Add(parameterReport);
+
+        algorithms.ForEach(a =>
         {
-            string vector = "";
-
-            foreach (var x in a.Report.Min.X)
-            {
-                vector += $"{x} ";
-            }
-
-            return vector;
-        }));*/
+            plotter.PlotContour(task.Function, plotRange, plotRange);
+            plotter.SetLine(a.Report.Path);
+            plotter.Export(_savePath + "\\Graphic Task 1", a.Report.Algorithm + $" a = {parameter}, eplislon = {epsilon}");
+        });
     }
 }
+
+reports.ForEach(r => writer.AddData(r.Select(x => x.FunctionCalculations)));
+reports.ForEach(r => writer.AddData(r.Select(x => x.Min.X[0])));
+reports.ForEach(r => writer.AddData(r.Select(x => x.Min.X[1])));
 
 writer.Save();

@@ -61,7 +61,7 @@ namespace AlgoritmsTwoDims
             {
                 for (int row = 0; row < column; row++)
                 {
-                    hessian[row, column] = hessian[column, row];
+                    hessian[column, row] = hessian[row, column];
                 }
             }
 
@@ -75,6 +75,7 @@ namespace AlgoritmsTwoDims
             _task = task;
             StartX = x;
             Report.FunctionCalculations = 0;
+            Report.Path = new();
 
             Init();
 

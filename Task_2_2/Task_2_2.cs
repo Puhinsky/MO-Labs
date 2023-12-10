@@ -1,8 +1,11 @@
 ﻿using Algorithms;
 using AlgoritmsTwoDims;
 using CSV;
+using Drawing;
 using FunctionTwoDims;
 using MathNet.Numerics.LinearAlgebra;
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 using Newton = AlgoritmsTwoDims.Newton;
 
 MinimizationTaskTwoDims task1 = new(
@@ -60,6 +63,9 @@ MinimizationTaskTwoDims task2 = new(
 string _savePath = "C:\\Users\\puhinsky\\source\\repos\\MO Labs\\Resources\\Lab2\\";
 CsvFileWriter writer = new(_savePath, "Задание 2");
 
+FunctionPlotter plotter = new("x1", "x2", 0.001d);
+Function.Range plotRange = new() { Min = 0, Max = 60 };
+
 var startPoint1 = Vector<double>.Build.Dense(new[] { 1d, 1d });
 
 SteepestDescent<RadixSearch> steepestDescent = new();
@@ -85,6 +91,8 @@ writer.AddData(algorithms.Select(a => a.Report.Algorithm));
 List<List<ReportTwoDims>> reports = new();
 List<MinimizationTaskTwoDims> tasks = new() { task1, task2 };
 
+int funtionNumber = 0;
+
 foreach (var task in tasks)
 {
     var taskReport = new List<ReportTwoDims>();
@@ -94,8 +102,8 @@ foreach (var task in tasks)
     newton.TryGetMin(startPoint1, task);
     simplex.TryGetMin(startPoint1, task, l: 2d, sigma: 0.6d);
     coordinateDescent.TryGetMin(startPoint1, task);
-    hookJeeves.TryGetMin(startPoint1, task, delta: Vector<double>.Build.DenseOfArray(new double[] { 1d, 1d }), gamma: 1.5d);
-    random.TryGetMin(startPoint1, task, alpha: 1d, gamma: 1.5d, triesCount: 50);
+    hookJeeves.TryGetMin(startPoint1, task, delta: Vector<double>.Build.DenseOfArray(new double[] { 1d, 1d }), gamma: 1.5d, 0.0001d);
+    random.TryGetMin(startPoint1, task, alpha: 30d, gamma: 1.2d, triesCount: 100);
 
     taskReport.Add(steepestDescent.Report);
     taskReport.Add(conjugateGradients.Report);
@@ -106,7 +114,22 @@ foreach (var task in tasks)
     taskReport.Add(random.Report);
 
     reports.Add(taskReport);
+
+    algorithms.ForEach(a =>
+    {
+        plotter.PlotContour(task.Function, plotRange, plotRange);
+        plotter.SetLine(a.Report.Path);
+        plotter.Export(_savePath + "\\Graphic Task 2", a.Report.Algorithm + $" f {funtionNumber}");
+    });
+
+    funtionNumber++;
 }
 
 reports.ForEach(r => writer.AddData(r.Select(x => x.FunctionCalculations)));
+reports.ForEach(r =>
+{
+    writer.AddData(r.Select(x => x.Min.X[0]));
+    writer.AddData(r.Select(x => x.Min.X[1]));
+});
+
 writer.Save();
