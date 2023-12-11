@@ -33,7 +33,7 @@ namespace AlgoritmsTwoDims
                 });
         }
 
-        public bool TryGetMin(Vector<double> x, MinimizationTaskTwoDims task, Vector<double> delta, double gamma, double singleEpsilon)
+        public bool TryGetMin(Vector<double> x, MinimizationTaskTwoDims task, Vector<double> delta, double gamma, double singleEpsilon = 0.0001d)
         {
             _delta = delta;
             _gamma = gamma;

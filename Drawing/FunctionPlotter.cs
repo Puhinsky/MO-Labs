@@ -38,7 +38,7 @@ namespace Drawing
             AddSeries(new FunctionSeries((x) => function(x).Y, range.Min, range.Max, _accuracity));
         }
 
-        public void PlotContour(TargetFunctionTwoDims function, Range rangeX, Range rangeY, int step = 100)
+        public void PlotContour(TargetFunctionTwoDims function, Range rangeX, Range rangeY, int step = 100, double levelStep = 100)
         {
             ClearSeries();
 
@@ -53,7 +53,8 @@ namespace Drawing
                 LabelBackground = OxyColors.White,
                 ColumnCoordinates = yy,
                 RowCoordinates = xx,
-                Data = peaksData
+                Data = peaksData,
+                ContourLevelStep = levelStep
             });
         }
 
