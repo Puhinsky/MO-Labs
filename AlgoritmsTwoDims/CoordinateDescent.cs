@@ -45,7 +45,9 @@ namespace AlgoritmsTwoDims
             _singleTask.Epsilon = _singleEpsilon;
             BuildBasis();
             _x = Vector<double>.Build.DenseOfVector(StartX!);
-            Report.Path.Add(_x);
+            Report.Path.Add(new List<Vector<double>>());
+            Report.Path.First().Add(_x);
+
             MinPoint = CalculateFunction(_x);
             SolveForBasis();
         }
@@ -53,7 +55,7 @@ namespace AlgoritmsTwoDims
         protected override void OnIteration()
         {
             SolveForBasis();
-            Report.Path.Add(_x!);
+            Report.Path.First().Add(_x!);
         }
 
         protected override bool TerminationCondition()

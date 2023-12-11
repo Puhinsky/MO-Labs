@@ -8,6 +8,6 @@ namespace AlgoritmsTwoDims
         public string Algorithm;
         public int FunctionCalculations;
         public PointTwoDims Min;
-        public List<Vector<double>> Path;
+        public List<List<Vector<double>>> Path;
     }
 }

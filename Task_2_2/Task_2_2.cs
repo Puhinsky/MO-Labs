@@ -118,7 +118,7 @@ foreach (var task in tasks)
     algorithms.ForEach(a =>
     {
         plotter.PlotContour(task.Function, plotRange, plotRange);
-        plotter.SetLine(a.Report.Path);
+        plotter.SetLines(a.Report.Path);
         plotter.Export(_savePath + "\\Graphic Task 2", a.Report.Algorithm + $" f {funtionNumber}");
     });
 

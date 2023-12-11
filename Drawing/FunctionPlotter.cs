@@ -79,6 +79,22 @@ namespace Drawing
             AddSeries(line);
         }
 
+        public void SetLines(IEnumerable<IEnumerable<Vector<double>>> lines)
+        {
+            foreach (var line in lines)
+            {
+                var lineChart = new LineSeries();
+
+                foreach (var x in line)
+                {
+                    lineChart.Points.Add(new DataPoint(x[0], x[1]));
+                    lineChart.MarkerType = MarkerType.Circle;
+                }
+
+                AddSeries(lineChart);
+            }
+        }
+
         public void Clear()
         {
             ClearSeries();

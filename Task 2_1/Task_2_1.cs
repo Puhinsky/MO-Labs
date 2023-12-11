@@ -122,7 +122,7 @@ foreach (var epsilon in epsilons)
         algorithms.ForEach(a =>
         {
             plotter.PlotContour(task.Function, plotRange, plotRange);
-            plotter.SetLine(a.Report.Path);
+            plotter.SetLines(a.Report.Path);
             plotter.Export(_savePath + "\\Graphic Task 1", a.Report.Algorithm + $" a = {parameter}, eplislon = {epsilon}");
         });
     }

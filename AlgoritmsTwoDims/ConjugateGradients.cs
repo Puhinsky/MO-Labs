@@ -56,7 +56,8 @@ namespace AlgoritmsTwoDims
 
             _x = Vector<double>.Build.DenseOfVector(StartX);
             _gradient = Vector<double>.Build.Dense(_x.Count);
-            Report.Path.Add(_x);
+            Report.Path.Add(new List<Vector<double>>());
+            Report.Path.First().Add(_x);
 
             _k = 0;
             _gradient = CalculateGradient(_x);
@@ -84,7 +85,7 @@ namespace AlgoritmsTwoDims
             }
 
             _p = -1d * _gradient + _beta * _p;
-            Report.Path.Add(_x);
+            Report.Path.First().Add(_x);
         }
 
         protected override bool TerminationCondition()

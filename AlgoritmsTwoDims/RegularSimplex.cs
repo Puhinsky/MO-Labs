@@ -48,9 +48,9 @@ namespace AlgoritmsTwoDims
                 return;
             }
 
-            if (TryReflectOther(maxPoint, out reflectPoint))
+            if (TryReflectOther(maxPoint, out (PointTwoDims, PointTwoDims) otherReflectPoint))
             {
-                ReplacePoint(maxPoint, reflectPoint);
+                ReplacePoint(otherReflectPoint.Item1, otherReflectPoint.Item2);
                 ReportSimplex();
 
                 return;
@@ -109,26 +109,26 @@ namespace AlgoritmsTwoDims
             return maxPoint.Y > reflectPoint.Y;
         }
 
-        private bool TryReflectOther(PointTwoDims maxPoint, out PointTwoDims result)
+        private bool TryReflectOther(PointTwoDims maxPoint, out (PointTwoDims, PointTwoDims) result)
         {
-            var reflects = new List<PointTwoDims>();
+            var reflects = new List<(PointTwoDims, PointTwoDims)>();
             bool minFinded = false;
 
             foreach (var point in _simplex!.Where(x => x != maxPoint))
             {
                 var reflectPoint = Reflect(point);
 
-                if (maxPoint.Y > reflectPoint.Y)
+                if (point.Y > reflectPoint.Y)
                 {
-                    reflects.Add(reflectPoint);
+                    reflects.Add((point, reflectPoint));
                     minFinded = true;
                 }
             }
 
             if (minFinded)
-                result = reflects.MinBy(f => f.Y);
+                result = reflects.MinBy(f => f.Item2.Y);
             else
-                result = new PointTwoDims();
+                result = (new PointTwoDims(), new PointTwoDims());
 
             return minFinded;
         }
@@ -155,7 +155,8 @@ namespace AlgoritmsTwoDims
 
         private void ReportSimplex()
         {
-            Report.Path.AddRange(_simplex!.Select(s => s.X).Append(_simplex![0].X));
+            Report.Path.Add(_simplex!.Select(s => s.X).Append(_simplex![0].X).ToList());
+            //Report.Path.AddRange(_simplex!.Select(s => s.X).Append(_simplex![0].X));
         }
     }
 }
